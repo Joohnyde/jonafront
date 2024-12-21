@@ -4,6 +4,7 @@ import { Component, ViewEncapsulation, QueryList, ViewChildren, ViewChild, Eleme
 import {GoogleMap, MapInfoWindow, MapMarker} from '@angular/google-maps'
 import { DatabaseService } from '../services/database.service';
 import { Container } from '../models/container';
+import { LocationService } from '../services/location.service';
 
 @Component({
   selector: 'app-mapa',
@@ -139,12 +140,23 @@ private map: google.maps.Map | undefined;
 
  constructor(
     private readonly db: DatabaseService,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private locationService: LocationService
   ) {
   }
 
   ngOnInit(): void {
     this.containers = this.db.getContainers();  
+    this.locationService.getLocation().subscribe(position => {
+
+        const longitude = position.coords.longitude;
+        const latitude = position.coords.latitude;
+        alert("Ura "+latitude+","+longitude)
+        MapaComponent.position = { lat : latitude, lon : longitude};
+        const pos = new google.maps.LatLng(latitude, longitude);
+        if(!this.startPos && this.googleMap) this.googleMap.panTo(pos);
+        this.startPos = pos
+    })
     this.initAutocomplete();
   }
 
@@ -156,23 +168,6 @@ private map: google.maps.Map | undefined;
         if (this.autocomplete) {
           google.maps.event.clearInstanceListeners(this.autocomplete);
         }
-      
-            // Center location
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition((position)=>{
-                const longitude = position.coords.longitude;
-                const latitude = position.coords.latitude;
-                MapaComponent.position = { lat : latitude, lon : longitude};
-                this.startPos = new google.maps.LatLng(latitude, longitude);
-        
-                if(this.googleMap)
-                this.googleMap.panTo(this.startPos);
-            }, (error)=>{
-                console.log(error)
-            });
-            } else {
-                console.log("No support for geolocation")
-            }
         
 
         this.autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement);

@@ -4,7 +4,6 @@ import { Component, ViewEncapsulation, QueryList, ViewChildren, ViewChild, Eleme
 import {GoogleMap, MapInfoWindow, MapMarker} from '@angular/google-maps'
 import { DatabaseService } from '../services/database.service';
 import { Container } from '../models/container';
-import { LocationService } from '../services/location.service';
 
 @Component({
   selector: 'app-mapa',
@@ -140,8 +139,7 @@ private map: google.maps.Map | undefined;
 
  constructor(
     private readonly db: DatabaseService,
-    private ngZone: NgZone,
-    private locationService: LocationService
+    private ngZone: NgZone
   ) {
   }
 

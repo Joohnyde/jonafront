@@ -147,16 +147,19 @@ private map: google.maps.Map | undefined;
 
   ngOnInit(): void {
     this.containers = this.db.getContainers();  
-    this.locationService.getLocation().subscribe(position => {
+    navigator.geolocation.watchPosition((position)=>{
 
         const longitude = position.coords.longitude;
         const latitude = position.coords.latitude;
-        alert("Ura "+latitude+","+longitude)
+        // alert("Ura "+latitude+","+longitude)
         MapaComponent.position = { lat : latitude, lon : longitude};
         const pos = new google.maps.LatLng(latitude, longitude);
         if(!this.startPos && this.googleMap) this.googleMap.panTo(pos);
         this.startPos = pos
     })
+    // this.locationService.getLocation().subscribe(position => {
+
+    // })
     this.initAutocomplete();
   }
 
